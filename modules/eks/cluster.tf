@@ -1,8 +1,11 @@
 resource "aws_eks_cluster" "cluster" {
   name     = var.cluster-name
   role_arn = aws_iam_role.cluster-role.arn
+#version = 
 
   vpc_config {
+    endpoint_private_access = false
+    endpoint_public_access  = true
     subnet_ids = var.subnets-id
   }
 
@@ -35,16 +38,3 @@ resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.cluster-role.name
 }
-
-#resource "aws_eks_cluster" "cluster-log" {
- # depends_on = [aws_cloudwatch_log_group.log-group]
-
-#  enabled_cluster_log_types = ["api", "audit"]
-#  name                      = var.cluster-name
-#}
-
-#resource "aws_cloudwatch_log_group" "log-group" {
-#  name              = "/aws/eks/${var.cluster-name}/cluster"
-#  retention_in_days = 14
-
-#}

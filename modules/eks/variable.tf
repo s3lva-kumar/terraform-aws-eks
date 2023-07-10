@@ -22,3 +22,6 @@ variable "workernodepolicy" {
 }
 
 variable "extra_depends_on" {}
+
+#variable "ami" {}
+#variable "instance_type" {}

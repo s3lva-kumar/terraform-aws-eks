@@ -1,3 +1,14 @@
+resource "aws_key_pair" "genkey" {
+  key_name   = "k8s"
+  public_key = trimspace(tls_private_key.ssh.public_key_openssh)
+}
+
+resource "tls_private_key" "ssh" {
+  algorithm = "RSA"
+  rsa_bits  = "4096"
+}
+
+
 # node groups role and policy
 
 resource "aws_iam_role" "node-policy" {
@@ -38,12 +49,26 @@ resource "aws_eks_node_group" "eks-node" {
     max_size     = 2
     min_size     = 1
   }
+  #ami_type             = var.ami
+  #capacity_type        = "ON_DEMAND"
+  #disk_size            = 20
+  #force_update_version = false
+  #instance_types       = var.instance_type
+
+  labels = {
+    role = "nodes-general"
+  }
 
   update_config {
     max_unavailable = 1
   }
+  
+  remote_access {
+    ec2_ssh_key = "k8s"
+  }
 
   depends_on = [
     aws_iam_role_policy_attachment.WorkerNodePolicy,
+    var.extra_depends_on
   ]
 }
